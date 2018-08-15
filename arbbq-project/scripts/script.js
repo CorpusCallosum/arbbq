@@ -20,29 +20,45 @@ FaceGestures.hasMouthOpen(face).monitor().subscribe(function(changedValue) {
 		hotdogDriver.start();
 		hotdog.hidden = false;
 
-		leftLaser.hidden = false;
-		rightLaser.hidden = false;
-		laserDriver.reset();
-		laserDriver.start();
+    //burger
+    burgerDriver.reset();
+    burgerDriver.start();
+    burger.hidden = false;
+
+	//	leftLaser.hidden = false;
+	//	rightLaser.hidden = false;
+		//laserDriver.reset();
+		//laserDriver.start();
 	} else {
 		Diagnostics.log('Mouth closed!');
 		hotdogDriver.stop();
 		hotdog.hidden = true;
 
-		laserDriver.start();
+    //burger
+    burgerDriver.stop();
+    burger.hidden = true;
+
+		//laserDriver.start();
 		leftLaser.hidden = true;
 		rightLaser.hidden = true;
 	}
 });
 
+var len = 1200;
 
-var len = 1500;
 //HOTDOG!
 var hotdog = Scene.root.find('fbxHotdog');
 var hotdogDriver = Animation.timeDriver({durationMilliseconds: len, loopCount:Infinity});
 var hotdogSampler = Animation.samplers.easeInSine(55,-10);
 var hotdogAnim = Animation.animate(hotdogDriver, hotdogSampler);
 hotdog.transform.z = hotdogAnim;
+
+//BURGER!
+var burger = Scene.root.find('burger');
+var burgerDriver = Animation.timeDriver({durationMilliseconds: len, loopCount:Infinity});
+var burgerSampler = Animation.samplers.easeInSine(55,-10);
+var burgerAnim = Animation.animate(burgerDriver, burgerSampler);
+burger.transform.z = burgerAnim.delayBy({milliseconds: len/2});
 
 //LASERS!
 var leftLaser = Scene.root.find('beam-left');
