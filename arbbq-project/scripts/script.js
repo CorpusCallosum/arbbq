@@ -1,14 +1,11 @@
-//
 // Available modules include (this is not a complete list):
 var Scene = require('Scene');
-// var Textures = require('Textures');
 var Materials = require('Materials');
 var FaceTracking = require('FaceTracking');
 var FaceGestures = require('FaceGestures');
 var Animation = require('Animation');
 var Diagnostics = require('Diagnostics');
-
-// var Reactive = require('Reactive');
+var CameraControl = require('CameraControl');
 
 //FACETRACKER stuff
 var face = FaceTracking.face(0);
@@ -20,23 +17,19 @@ FaceGestures.hasMouthOpen(face).monitor().subscribe(function(changedValue) {
 		hotdogDriver.start();
 		hotdog.hidden = false;
 
-    //burger
-    burgerDriver.reset();
-    burgerDriver.start();
-    burger.hidden = false;
-
-	//	leftLaser.hidden = false;
-	//	rightLaser.hidden = false;
-		//laserDriver.reset();
-		//laserDriver.start();
+	    //burger
+	    burgerDriver.reset();
+	    burgerDriver.start();
+	    burger.hidden = false;
 	} else {
 		Diagnostics.log('Mouth closed!');
 		hotdogDriver.stop();
 		hotdog.hidden = true;
 
-    //burger
-    burgerDriver.stop();
-    burger.hidden = true;
+	    //burger
+	    burgerDriver.stop();
+	    burgerDriver.reset();
+	    burger.hidden = true;
 
 		//laserDriver.start();
 		leftLaser.hidden = true;
@@ -56,9 +49,11 @@ hotdog.transform.z = hotdogAnim;
 //BURGER!
 var burger = Scene.root.find('burger');
 var burgerDriver = Animation.timeDriver({durationMilliseconds: len, loopCount:Infinity});
-var burgerSampler = Animation.samplers.easeInSine(55,-10);
+var burgerSampler = Animation.samplers.easeInSine([55, 0],[-10, Math.PI]); // z , spin
 var burgerAnim = Animation.animate(burgerDriver, burgerSampler);
-burger.transform.z = burgerAnim.delayBy({milliseconds: len/2});
+burger.transform.z = burgerAnim.get(0).delayBy({milliseconds: len/2});
+burger.transform.rotationY = burgerAnim.get(1).delayBy({milliseconds: len/2});
+
 
 //LASERS!
 var leftLaser = Scene.root.find('beam-left');
@@ -76,4 +71,6 @@ leftLaser.transform.scaleY = rightLaser.transform.scaleY = laserAnim.get(3);
 
 //HELPERS
 function degToRad(d){return d*0.0174533;}
+CameraControl.setCaptureDevicePositionFront();
+
 
